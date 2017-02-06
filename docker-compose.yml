@@ -1,0 +1,76 @@
+#--------------------------------------------------------------------------
+# Docker :: NODE.JS + Mongo + ANGULAR2
+# Autor: JC Gil <sensukho@gmail.com>
+#--------------------------------------------------------------------------
+
+version: '2'
+
+services:
+##### NODE.JS API CONTAINER #####
+    node_api:
+        container_name: node_api
+        build:
+            context: ./nodejs_api
+        volumes_from:
+            - volumes_source
+        ports:
+            - "4200:4200"
+        links:
+            - mongo
+        depends_on:
+            - "mongo"
+        networks:
+            mynet:
+                ipv4_address: 172.2.0.101
+        restart: always
+##### NODE.JS WEB CONTAINER #####
+    node_web:
+        container_name: node_web
+        build:
+            context: ./nodejs_web
+        volumes_from:
+            - volumes_source
+        ports:
+            - "3000:3000"
+        links:
+            - mongo
+        depends_on:
+            - "mongo"
+        networks:
+            mynet:
+                ipv4_address: 172.2.0.102
+        restart: always
+##### MONGODB CONTAINER #####
+    mongo:
+        container_name: mongo
+        build:
+            context: ./mongodb
+        volumes_from:
+            - volumes_data
+        ports:
+            - "27017:27017"
+        depends_on:
+            - "volumes_data"
+        networks:
+            mynet:
+                ipv4_address: 172.2.0.103
+        restart: always
+##### APLICATION CONTAINER #####
+    volumes_source:
+        container_name: volumes_source
+        build: ./volumes
+        volumes:
+            - ./volumes/www:/var/www
+##### DATA CONTAINER #####
+    volumes_data:
+        container_name: volumes_data
+        build: ./volumes/data
+        volumes:
+            - ./volumes/data/db:/data/db
+##### NETWORK #####
+networks:
+    mynet:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.2.0.0/24

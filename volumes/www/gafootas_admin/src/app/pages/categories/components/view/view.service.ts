@@ -8,7 +8,7 @@ export class ViewService{
     public baseUrl: string;
 
     constructor(private _http: Http){
-        this.baseUrl = 'http://192.168.0.110:4200/api/';
+        this.baseUrl = 'http://api.gafootas.com/';
     }
 
     getCategories(){
